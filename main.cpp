@@ -11,6 +11,7 @@
 #include "main.h"
 #include "misc.h"
 #include "lora.h"
+#include "cutdown.h"
 #include "sensors/bme.h"
 #include "sensors/gps.h"
 #include "sensors/no2.h"
@@ -30,6 +31,7 @@ static Repeater NO2_repeater(1000);
 static Repeater MUON_repeater(1);
 static Repeater iTemp_repeater(1000);
 static Repeater Lora_repeater(1000);
+static Repeater CUTDOWN_repeater(1000);
 
 //MAIN CORE FUNCTIONS
 
@@ -102,6 +104,10 @@ int main() {
     initLora();
     debug("Done\n");
 
+    debug("> Init Cutdown... ");
+    init_cutdown();
+    debug("Done\n");
+
     debug("> Init internal temperature... ");
     adc_set_temp_sensor_enabled(true);
     debug("Done\n");
@@ -138,6 +144,7 @@ int main() {
         check_BME(&state);
         check_NO2(&state);
         check_GPS(&state);
+        check_CUTDOWN(&state);
         check_internalTemps(&state);
     }
 }
@@ -158,6 +165,7 @@ void core_entry() {
     while(1) {
         //threadloop
         //check_MUON();
+        check_LORA(&state);
     }
         
 }
@@ -214,6 +222,14 @@ void check_GPS(struct STATE *s) {
     if (FM_repeater.can_fire()) {
         mutex_enter_blocking(&mtx);
         writeFlightMode(s);
+        mutex_exit(&mtx);
+    }
+}
+
+void check_CUTDOWN(struct STATE *s) {
+    if (CUTDOWN_repeater.can_fire()) {
+        mutex_enter_blocking(&mtx);
+        cutdown_check(&state);
         mutex_exit(&mtx);
     }
 }

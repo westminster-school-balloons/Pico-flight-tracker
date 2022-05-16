@@ -14,6 +14,7 @@ add_executable(pico
     main.cpp
     misc.cpp
     lora.cpp
+    cutdown.cpp
     helpers/repeater.cpp
     helpers/memory.cpp
     sensors/bme.cpp

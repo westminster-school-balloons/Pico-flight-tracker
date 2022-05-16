@@ -53,6 +53,9 @@
 //MUON GPIO (ADC 2)
 #define U_PIN 28
 
+// CUTDOWN GPIO
+#define CUT_PIN 9
+
 //Mutex
 static mutex_t mtx;
 static mutex_t mtx_adc;
@@ -88,6 +91,7 @@ static struct STATE
 	int TimeTillLanding;
 	float PredictedLandingSpeed;
 	int GPSFlightMode = 0;
+	bool HasCutDown = false;
 } state;
 
 
@@ -98,6 +102,8 @@ void fix_LED();
 void check_BME(struct STATE *s);
 void check_GPS(struct STATE *s);
 void check_NO2(struct STATE *s);
+void check_LORA(struct STATE *s);
+void check_CUTDOWN(struct STATE *s);
 void check_internalTemps(struct STATE *s);
 void writeStateToMem(struct STATE * s);
 
