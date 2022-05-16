@@ -19,8 +19,6 @@
 #include "helpers/repeater.h"
 #include "helpers/memory.h"
 
-// This is a test
-
 //RUNTIME VARIABLES
 
 static Repeater LED_repeater(3000);
