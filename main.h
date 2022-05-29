@@ -13,7 +13,7 @@
 
 #define ADC_CONV 3.3f / (1 << 12);
 
-// Toggle if using ADC 0 and 1 for solar or N02
+// Toggle if using ADC 0 and 1 for solar or N02 - CONFIGURE TO MATCH JUMPER CABLES
 #define SOLAR0_EN false
 #define SOLAR1_EN false
 
