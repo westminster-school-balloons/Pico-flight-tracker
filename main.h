@@ -91,7 +91,7 @@ static struct STATE
 	int TimeTillLanding;
 	float PredictedLandingSpeed;
 	int GPSFlightMode = 0;
-	bool HasCutDown = false;
+	int HasCutDown = 0;
 } state;
 
 

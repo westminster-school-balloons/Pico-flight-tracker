@@ -61,7 +61,7 @@ bool is_in_geofence(float longitude, float latitude, const float *geofence, int 
 
     // If latitude and longitude are both zero (invalid data), return false
     if (latitude == 0.0 && longitude == 0.0) {
-        return false;
+        return true;
     }
 
     int count = 0;
@@ -124,10 +124,10 @@ bool left_of_line(float px, float py, float lx0, float ly0, float lx1, float ly1
 
 
 void cutdown_check(struct STATE * state){
-    // If payload as already cut and altitude is now less than cut altitude, set gpio pin to low
+    // If payload as already cut and altitude is now less than cut altitude (by certain a amount), set gpio pin to low
     if (state->HasCutDown) {
 
-        if (state->Altitude < cut_altitude) {
+        if (cut_altitude - state->Altitude > 10) {
             debug("> CUTDOWN burn stopped \n");  
             gpio_put(CUT_PIN, 0);
         } else {
@@ -141,7 +141,7 @@ void cutdown_check(struct STATE * state){
     if (should_cut(state)) {
         debug("> Payload CUTDOWN - burn started! \n");
         gpio_put(CUT_PIN, 1);
-        state->HasCutDown = true;
+        state->HasCutDown = 1;
 
         // Save cut altitude
         cut_altitude = state->Altitude;

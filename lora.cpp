@@ -543,9 +543,10 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 	
     SentenceCounter++;
 	
+	// TODO: Modify to transmit new sensor data
     sprintf(TxLine,
             // SENTENCE_LENGTH-6,
-            "$$%s,%d,%02d:%02d:%02d,%.5f,%.5f,%05.5ld,%u,%.1f,%.1f,%.1f,%.0f,%.1f,%.2f,%7.5f,%7.5f,%3.1f,%d,%.5f,%.5f",
+            "$$%s,%d,%02d:%02d:%02d,%.5f,%.5f,%05.5ld,%u,%.1f,%.1f,%.1f,%.0f,%.1f,%.2f,%7.5f,%7.5f,%3.1f,%d,%.5f,%.5f,%d",
             PayloadID,
             SentenceCounter,
 			state->Hours, state->Minutes, state->Seconds,
@@ -564,9 +565,11 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 			state->PredictedLandingSpeed,
 			state->TimeTillLanding,
 			state->NO2WE,
-			state->NO2AE
+			state->NO2AE,
+			state->HasCutDown
             );
     Count = strlen(TxLine);
+	// DEBUG: printf("Message length: %d \n", Count);
 
     CRC = 0xffff;           // Seed
     xPolynomial = 0x1021;
