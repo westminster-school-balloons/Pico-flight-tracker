@@ -546,9 +546,10 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 	// TODO: Modify to transmit new sensor data
     sprintf(TxLine,
             // SENTENCE_LENGTH-6,
-            "$$%s,%d,%02d:%02d:%02d,%.5f,%.5f,%05.5ld,%u,%.1f,%.1f,%.1f,%.0f,%.1f,%.2f,%7.5f,%7.5f,%3.1f,%d,%.5f,%.5f,%d",
+            "$$%s,%d,%d,%02d:%02d:%02d,%.5f,%.5f,%05.5ld,%u,%.1f,%.1f,%.1f,%.0f,%.1f,%.2f,%7.5f,%7.5f,%3.1f,%d,%.5f,%.5f,%.5f,%.5f,%.5f",
             PayloadID,
             SentenceCounter,
+			state->HasCutDown,
 			state->Hours, state->Minutes, state->Seconds,
             state->Latitude,
             state->Longitude,
@@ -566,7 +567,9 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 			state->TimeTillLanding,
 			state->NO2WE,
 			state->NO2AE,
-			state->HasCutDown
+			state->Solar0,
+			state->Solar1,
+			state->Solar2
             );
     Count = strlen(TxLine);
 	// DEBUG: printf("Message length: %d \n", Count);

@@ -13,10 +13,20 @@ void initNO2() {
 }
 
 void readNO2(struct STATE *state) {
-    adc_select_input(0);
-    uint16_t workingVoltage = adc_read();
-    adc_select_input(1);
-    uint16_t auxillaryVoltage = adc_read();
+    uint16_t workingVoltage = 0;
+    uint16_t auxillaryVoltage = 0;
+
+    // Only read of solar panels not enabled
+    if (!SOLAR0_EN) {
+        adc_select_input(0);
+        uint16_t workingVoltage = adc_read();
+    }
+
+    if (!SOLAR1_EN) {
+        adc_select_input(1);
+        uint16_t auxillaryVoltage = adc_read();
+    }
+
     float convWV = workingVoltage * ADC_CONV;
     float convAV = auxillaryVoltage * ADC_CONV;
     state->NO2WE = convWV;

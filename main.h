@@ -13,6 +13,10 @@
 
 #define ADC_CONV 3.3f / (1 << 12);
 
+// Toggle if using ADC 0 and 1 for solar or N02
+#define SOLAR0_EN false
+#define SOLAR1_EN false
+
 //SPI
 #define SPI_PORT_0 spi0
 #define MISO_0 16
@@ -37,7 +41,7 @@
 #define SDA_1 2
 #define SCL_1 3
 
-//LORA
+//LORA - REMEMBER TO SET CALLSIGN BEFORE LAUNCH
 #define CALLSIGN "WSHAB2"
 #define FREQUENCY 434.425
 #define LORA_MODE 1
@@ -50,11 +54,19 @@
 #define B4WE 26	//Working electrode
 #define B4AE 27 //Auxillary electrode
 
+//SOLAR GPIO (ADC 0 1 2)
+#define SOLAR0 26
+#define SOLAR1 27
+#define SOLAR2 28
+
 //MUON GPIO (ADC 2)
 #define U_PIN 28
 
 // CUTDOWN GPIO
 #define CUT_PIN 9
+
+// BUZZER GPIO
+#define BZ_PIN 2
 
 //Mutex
 static mutex_t mtx;
@@ -82,6 +94,9 @@ static struct STATE
 	float Humidity;
 	float NO2WE;
 	float NO2AE;
+	float Solar0;
+	float Solar1;
+	float Solar2;
 	int muonCount;
 	float muonRate;
 	TFlightMode FlightMode;
@@ -104,6 +119,8 @@ void check_GPS(struct STATE *s);
 void check_NO2(struct STATE *s);
 void check_LORA(struct STATE *s);
 void check_CUTDOWN(struct STATE *s);
+void check_SOLAR(struct STATE *s);
+void check_PM(struct STATE *s);
 void check_internalTemps(struct STATE *s);
 void writeStateToMem(struct STATE * s);
 

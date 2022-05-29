@@ -16,6 +16,8 @@
 #include "sensors/gps.h"
 #include "sensors/no2.h"
 #include "sensors/muon.h"
+#include "sensors/solar.h"
+#include "sensors/pm.h"
 #include "helpers/repeater.h"
 #include "helpers/memory.h"
 
@@ -30,6 +32,8 @@ static Repeater MUON_repeater(1);
 static Repeater iTemp_repeater(1000);
 static Repeater Lora_repeater(1000);
 static Repeater CUTDOWN_repeater(1000);
+static Repeater Solar_repeater(1000);
+static Repeater PM_repeater(1000);
 
 //MAIN CORE FUNCTIONS
 
@@ -78,15 +82,12 @@ int main() {
     gpio_set_function(MOSI_1, GPIO_FUNC_SPI);
     debug("Done\n");
 
-    debug("> Init I2C 0 & 1 @400kHz... ");
+    debug("> Init I2C 0 @400kHz... ");
     i2c_init(I2C_PORT_0, 400*1000);
     gpio_set_function(SDA_0, GPIO_FUNC_I2C);
     gpio_set_function(SCL_0, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_0);
     gpio_pull_up(SCL_0);
-    i2c_init(I2C_PORT_1, 400*1000);
-    gpio_set_function(SDA_1, GPIO_FUNC_I2C);
-    gpio_set_function(SCL_1, GPIO_FUNC_I2C);
 
     debug("Done\n");
 
@@ -104,6 +105,14 @@ int main() {
 
     debug("> Init Cutdown... ");
     init_cutdown();
+    debug("Done\n");
+
+    debug("> Init Solar... ");
+    initSolar();
+    debug("Done\n");
+
+    debug("> Init PM... ");
+    initPM();
     debug("Done\n");
 
     debug("> Init internal temperature... ");
@@ -143,6 +152,9 @@ int main() {
         check_NO2(&state);
         check_GPS(&state);
         check_CUTDOWN(&state);
+        check_SOLAR(&state);
+        check_PM(&state);
+
         check_internalTemps(&state);
     }
 }
@@ -198,6 +210,24 @@ void check_NO2(struct STATE *s) {
         readNO2(s);
         mutex_exit(&mtx);
         mutex_exit(&mtx_adc);
+    }
+}
+
+void check_SOLAR(struct STATE *s) {
+    if (Solar_repeater.can_fire()) {
+        mutex_enter_blocking(&mtx);
+        mutex_enter_blocking(&mtx_adc);
+        readSolar(s);
+        mutex_exit(&mtx);
+        mutex_exit(&mtx_adc);
+    }
+}
+
+void check_PM(struct STATE *s) {
+    if (PM_repeater.can_fire()) {
+        mutex_enter_blocking(&mtx);
+        readPM(s);
+        mutex_exit(&mtx);
     }
 }
 
