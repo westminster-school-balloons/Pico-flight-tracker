@@ -11,32 +11,6 @@
 #include "../misc.h"
 #include "pm.h"
 
-// set hardcoded values
-// register addresses
-const uint8_t REG_DEVID = 0x00;
-const uint8_t REG_COMMANDBYTE = 0x03;
-const uint8_t REG_FIRMWAREVERSION = 0x12;
-const uint8_t REG_INFOSTRING = 0x3F;
-const uint8_t REG_CHECKSTATUS = 0xCF;
-const uint8_t REG_POWERSTATUS = 0x13;
-const uint8_t REG_HISTOGRAMDATA = 0x30;
-const uint8_t REG_PMDATA = 0x32;
-
-// peripheral commands to send
-const uint8_t FAN_OFF = 0x02;
-const uint8_t FAN_ON = 0x03;
-const uint8_t LASER_OFF = 0x06;
-const uint8_t LASER_ON = 0x07;
-
-// byte index in histogram data
-const int BYTE_SAMPLINGPERIOD = 52; // 16 bit
-const int BYTE_FLOWRATE = 54; // 16 bit
-const int BYTE_TEMPERATURE = 56; // 16 bit
-const int BYTE_RHUMIDITY = 58; // 16 bit
-const int BYTE_PM1 = 60; // 32 bit
-const int BYTE_PM2 = 64; // 32 bit
-const int BYTE_PM10 = 68; // 32 bit
-
 // select CS pin (active low)
 inline void cs_select() {
     asm volatile("nop \n nop \n nop");
@@ -194,6 +168,7 @@ void initPM() {
     gpio_set_function(MOSI, GPIO_FUNC_SPI);
     gpio_set_function(SCLK, GPIO_FUNC_SPI);
 
+    // TODO: not too sure what this hardcoded value is, need to check
     gpio_init(6);
     gpio_set_dir(6, GPIO_OUT);
     gpio_put(6, 1);
