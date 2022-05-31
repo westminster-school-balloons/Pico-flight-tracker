@@ -94,6 +94,9 @@ static struct STATE
 	float Humidity;
 	float NO2WE;
 	float NO2AE;
+	float PM1;
+	float PM2;
+	float PM10;
 	float Solar0;
 	float Solar1;
 	float Solar2;
