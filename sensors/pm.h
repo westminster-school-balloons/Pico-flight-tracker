@@ -3,12 +3,12 @@
 
 
 // TODO: temporary pin numbers, need to configure in main.h
-#define MISO 8
-#define MOSI 11
-#define SCLK 10
-#define CS 9
+//#define MISO 8
+//#define MOSI 11
+//#define SCLK 10
+//#define CS 9
 
-#define SPI_PORT spi1
+//#define SPI_PORT spi0
 #define READ_BIT 0x80
 
 // set hardcoded values

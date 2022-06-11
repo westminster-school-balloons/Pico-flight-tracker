@@ -8,6 +8,7 @@ project(pico)
 # Initialize the SDK
 pico_sdk_init()
 
+add_subdirectory(FatFs_SPI build)
 include(example_auto_set_url.cmake)
 
 add_executable(pico
@@ -17,6 +18,8 @@ add_executable(pico
     cutdown.cpp
     helpers/repeater.cpp
     helpers/memory.cpp
+    helpers/sd.cpp
+    helpers/sd_hw_config.cpp
     sensors/bme.cpp
     sensors/gps.cpp
     sensors/no2.cpp
@@ -35,6 +38,7 @@ target_link_libraries(pico
     pico_multicore
     pico_sync
     pico_time
+    FatFs_SPI
 )
 
 pico_enable_stdio_usb(pico 1)

@@ -7,6 +7,7 @@
 #include "main.h"
 #include "misc.h"
 #include "lora.h"
+#include "helpers/sd.h"
 
 typedef enum {lmIdle, lmListening, lmSending} tLoRaMode;
 
@@ -523,6 +524,9 @@ void check_lora(struct STATE *state)
 						// printf("LoRa: Tx ASCII Sentence\n");
 						printf("> (1) ");
 						printf("%s\r", (char *)Sentence);
+
+						// Write sentence to SD card
+						logStringToSD((char *)Sentence, "lora_log.txt");
 						
 					}
 					SendLoRaPacket(Sentence, PacketLength, 0);  

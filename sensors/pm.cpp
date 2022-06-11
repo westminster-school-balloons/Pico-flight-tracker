@@ -12,13 +12,13 @@
 #include "pm.h"
 
 // select CS pin (active low)
-inline void cs_select() {
+inline void pm_cs_select() {
     asm volatile("nop \n nop \n nop");
     gpio_put(CS_PM, 0);
     asm volatile("nop \n nop \n nop");
 }
 
-inline void cs_deselect() {
+inline void pm_cs_deselect() {
     asm volatile("nop \n nop \n nop");
     gpio_put(CS_PM, 1);
     asm volatile("nop \n nop \n nop");
@@ -52,21 +52,21 @@ int check_status(uint8_t reg) {
 // read registers
 void read_registers(uint8_t reg, uint8_t *values, uint16_t len) {
     uint8_t status;
-    cs_select();
+    pm_cs_select();
     check_status(reg);
     for (int j=0; j<len; j++) {
         spi_read_blocking(SPI_PORT_0, reg, &values[j], 1);
         sleep_us(10);
     }
-    cs_deselect();
+    pm_cs_deselect();
     sleep_ms(10); // wait 10ms before executing the next command
 }
 
 void write_register(uint8_t reg, uint8_t data) {
-    cs_select();
+    pm_cs_select();
     check_status(reg);
     spi_write_blocking(SPI_PORT_0, &data, 1);
-    cs_deselect();
+    pm_cs_deselect();
     sleep_ms(10);
 }
 
@@ -161,6 +161,7 @@ void initPM() {
     stdio_init_all();
     
     /*
+    Old configuration
     spi_init(SPI_PORT, 500000); // 500kHz SPI frequency
     spi_set_format(SPI_PORT, 8, SPI_CPOL_0, SPI_CPHA_1, SPI_MSB_FIRST);
 
@@ -177,7 +178,7 @@ void initPM() {
 
     gpio_init(CS_PM);
     gpio_set_dir(CS_PM, GPIO_OUT);
-    cs_deselect(); // set CS high
+    pm_cs_deselect(); // set CS high
 
     bool fan_on = set_peripheral_status(FAN_ON);
     bool laser_on = set_peripheral_status(LASER_ON);

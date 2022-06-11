@@ -20,6 +20,7 @@
 #include "sensors/pm.h"
 #include "helpers/repeater.h"
 #include "helpers/memory.h"
+#include "helpers/sd.h"
 
 //RUNTIME VARIABLES
 
@@ -123,7 +124,7 @@ int main() {
     debug("Done\n");
 
     debug("> Init PM... ");
-    initPM();
+    //initPM();
     debug("Done\n");
 
     debug("> Init internal temperature... ");
@@ -164,7 +165,7 @@ int main() {
         check_GPS(&state);
         check_CUTDOWN(&state);
         check_SOLAR(&state);
-        check_PM(&state);
+        //check_PM(&state);
 
         check_internalTemps(&state);
     }
