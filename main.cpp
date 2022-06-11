@@ -73,6 +73,10 @@ int main() {
     debug("> Init SPI 0 & 1 @500kHz... ");
     spi_init(SPI_PORT_0, 500000);
     spi_init(SPI_PORT_1, 500000);
+
+    // Set spi to correct mode for PM sensor
+    spi_set_format(SPI_PORT_0, 8, SPI_CPOL_0, SPI_CPHA_1, SPI_MSB_FIRST);
+
     //GPIO for SPI
     gpio_set_function(MISO_0, GPIO_FUNC_SPI);
     gpio_set_function(SCLK_0, GPIO_FUNC_SPI);
@@ -80,6 +84,13 @@ int main() {
     gpio_set_function(MISO_1, GPIO_FUNC_SPI);
     gpio_set_function(SCLK_1, GPIO_FUNC_SPI);
     gpio_set_function(MOSI_1, GPIO_FUNC_SPI);
+
+    // SPI Chip Select lines
+    gpio_init(CS_PM);
+    gpio_set_dir(CS_PM, GPIO_OUT);
+    gpio_init(CS_SD);
+    gpio_set_dir(CS_SD, GPIO_OUT);
+
     debug("Done\n");
 
     debug("> Init I2C 0 @400kHz... ");

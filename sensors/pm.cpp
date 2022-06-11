@@ -14,13 +14,13 @@
 // select CS pin (active low)
 inline void cs_select() {
     asm volatile("nop \n nop \n nop");
-    gpio_put(CS, 0);
+    gpio_put(CS_PM, 0);
     asm volatile("nop \n nop \n nop");
 }
 
 inline void cs_deselect() {
     asm volatile("nop \n nop \n nop");
-    gpio_put(CS, 1);
+    gpio_put(CS_PM, 1);
     asm volatile("nop \n nop \n nop");
 }
 
@@ -29,7 +29,7 @@ inline void cs_deselect() {
 int check_status(uint8_t reg) {
     uint8_t status;
     int counter = 0;
-    spi_write_read_blocking(SPI_PORT, &reg, &status, 1);
+    spi_write_read_blocking(SPI_PORT_0, &reg, &status, 1);
     while (status != 0xF3) {
         sleep_ms(10);
         ++counter;
@@ -43,7 +43,7 @@ int check_status(uint8_t reg) {
             sleep_ms(2000); // wait for 2s for the OPC N3 to reset
             counter = 0;
         }
-        spi_write_read_blocking(SPI_PORT, &reg, &status, 1);
+        spi_write_read_blocking(SPI_PORT_0, &reg, &status, 1);
     }
     sleep_ms(10);
     return 0;
@@ -55,7 +55,7 @@ void read_registers(uint8_t reg, uint8_t *values, uint16_t len) {
     cs_select();
     check_status(reg);
     for (int j=0; j<len; j++) {
-        spi_read_blocking(SPI_PORT, reg, &values[j], 1);
+        spi_read_blocking(SPI_PORT_0, reg, &values[j], 1);
         sleep_us(10);
     }
     cs_deselect();
@@ -65,7 +65,7 @@ void read_registers(uint8_t reg, uint8_t *values, uint16_t len) {
 void write_register(uint8_t reg, uint8_t data) {
     cs_select();
     check_status(reg);
-    spi_write_blocking(SPI_PORT, &data, 1);
+    spi_write_blocking(SPI_PORT_0, &data, 1);
     cs_deselect();
     sleep_ms(10);
 }
@@ -160,6 +160,7 @@ void initPM() {
     // Initialise PM Sensor
     stdio_init_all();
     
+    /*
     spi_init(SPI_PORT, 500000); // 500kHz SPI frequency
     spi_set_format(SPI_PORT, 8, SPI_CPOL_0, SPI_CPHA_1, SPI_MSB_FIRST);
 
@@ -167,14 +168,15 @@ void initPM() {
     gpio_set_function(MISO, GPIO_FUNC_SPI);
     gpio_set_function(MOSI, GPIO_FUNC_SPI);
     gpio_set_function(SCLK, GPIO_FUNC_SPI);
+    */
 
     // TODO: not too sure what this hardcoded value is, need to check
     gpio_init(6);
     gpio_set_dir(6, GPIO_OUT);
     gpio_put(6, 1);
 
-    gpio_init(CS);
-    gpio_set_dir(CS, GPIO_OUT);
+    gpio_init(CS_PM);
+    gpio_set_dir(CS_PM, GPIO_OUT);
     cs_deselect(); // set CS high
 
     bool fan_on = set_peripheral_status(FAN_ON);

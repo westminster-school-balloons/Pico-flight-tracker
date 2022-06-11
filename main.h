@@ -23,6 +23,10 @@
 #define SCLK_0 18
 #define MOSI_0 19
 
+// Chip select lines
+#define CS_PM 22
+#define CS_SD 17
+
 #define SPI_PORT_1 spi1
 #define MISO_1 12
 #define SCLK_1 14
