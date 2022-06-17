@@ -59,6 +59,12 @@ int main() {
     LED_repeater.update_delay(50, 50, 50);
     debug("Done\n");
 
+    debug("> Init Buzzer... ");
+    gpio_init(BZ_PIN);
+    gpio_set_dir(BZ_PIN, GPIO_OUT);
+    gpio_put(BZ_PIN, 1);
+    debug("Done\n");
+
     debug("> Init ADC... ");
     adc_init();
     debug("Done\n");
@@ -94,13 +100,17 @@ int main() {
 
     debug("Done\n");
 
-    debug("> Init I2C 0 @400kHz... ");
+    debug("> Init I2C 0 and 1 @400kHz... ");
     i2c_init(I2C_PORT_0, 400*1000);
+    i2c_init(I2C_PORT_1, 400*1000);
     gpio_set_function(SDA_0, GPIO_FUNC_I2C);
     gpio_set_function(SCL_0, GPIO_FUNC_I2C);
+    gpio_set_function(SDA_1, GPIO_FUNC_I2C);
+    gpio_set_function(SCL_1, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_0);
     gpio_pull_up(SCL_0);
-
+    gpio_pull_up(SDA_1);
+    gpio_pull_up(SCL_1);
     debug("Done\n");
 
     debug("> Init BME280... ");
@@ -160,6 +170,7 @@ int main() {
     
         watchdog_update();
         check_LED(&state);
+        check_BUZZER(&state);
         check_BME(&state);
         check_NO2(&state);
         check_GPS(&state);
@@ -205,6 +216,17 @@ void check_LED(struct STATE *s) {
 void fix_LED() {
     LED_repeater.clear();
     LED_repeater.update_delay(100, 500);
+}
+
+void check_BUZZER(struct STATE *s) {
+    mutex_enter_blocking(&mtx);
+    TFlightMode fm = s->FlightMode;
+    mutex_exit(&mtx);
+    
+    // If landed, set pin low to turn on buzzer
+    if (fm == fmLanded) {
+        gpio_put(BZ_PIN, 0);
+    }
 }
 
 void check_BME(struct STATE *s) {

@@ -37,13 +37,22 @@
 #define BYTE_PM2 64 // 32 bit
 #define BYTE_PM10 68 // 32 bit
 
+// information for checksum calculator
+#define CRC_POLYNOMIAL 0xA001
+#define INITIAL_CRC 0xFFFF
+
 struct PMData {
+    uint16_t bins[24];
+    uint8_t mtof[4];
     float sampling_period;
     float flow_rate;
     float temperature;
+    float rhumidity;
     float pm1_data;
     float pm2_data;
     float pm10_data;
+    uint16_t fan_rev_count;
+    uint16_t laser_status;
 };
 
 void initPM();

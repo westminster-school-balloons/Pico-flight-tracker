@@ -24,6 +24,26 @@ inline void pm_cs_deselect() {
     asm volatile("nop \n nop \n nop");
 }
 
+// Compute checksum for validating PM data
+uint16_t compute_checksum(const uint8_t* data, int num_bytes) {
+    uint16_t crc = INITIAL_CRC;
+
+    for (int i = 0; i < num_bytes; i++) {
+        crc ^= data[i];
+
+        for (int bit = 0; bit < 8; bit ++) {
+            if (crc & 1) {
+                crc >>= 1;
+                crc ^= CRC_POLYNOMIAL;
+            } else {
+                crc >>= 1;
+            }
+        }
+    }
+
+    return crc;
+}
+
 // continuously checks status and only returns when the status is F3 i.e. free
 // remember to CS select before calling this function
 int check_status(uint8_t reg) {
@@ -187,7 +207,9 @@ void initPM() {
 
 void readPM(struct STATE *state) {
     // Read data from PM sensor
-     uint8_t histogramdata[86];
+    uint8_t histogramdata[86];
+
+    // TODO: Include a check for the checksum
 
     read_registers(REG_HISTOGRAMDATA, histogramdata, 86);
 
@@ -198,6 +220,9 @@ void readPM(struct STATE *state) {
     uint16_t temp16 = convert_8bits_to_16bit(histogramdata, BYTE_TEMPERATURE);
     float temperature = -45+175*((float)temp16/(pow(2, 16)-1));
 
+    uint16_t rhumidity16 = convert_8bits_to_16bit(histogramdata, BYTE_RHUMIDITY);
+    float rhumidity = 100*((float)rhumidity16/(pow(2, 16)-1));
+
     uint32_t PM1_IEEE = convert_8bits_to_32bit(histogramdata, BYTE_PM1);
     float pm1_data = convert_32bit_IEEE_to_float(PM1_IEEE);
 
@@ -207,9 +232,12 @@ void readPM(struct STATE *state) {
     uint32_t PM10_IEEE = convert_8bits_to_32bit(histogramdata, BYTE_PM10);
     float pm10_data = convert_32bit_IEEE_to_float(PM10_IEEE);
 
-    PMData pm_data = {sampling_period, flow_rate, temperature, pm1_data, pm2_data, pm10_data};
-    state->PM1 = pm_data.pm1_data;
-    state->PM2 = pm_data.pm2_data;
-    state->PM10 = pm_data.pm10_data;
+    //PMData pm_data = {sampling_period, flow_rate, temperature, pm1_data, pm2_data, pm10_data};
+
+    state->PMTemperature = temperature;
+    state->PMHumidity = rhumidity;
+    state->PM1 = pm1_data;
+    state->PM2 = pm2_data;
+    state->PM10 = pm10_data;
     return;
 }

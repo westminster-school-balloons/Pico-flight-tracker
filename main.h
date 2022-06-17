@@ -42,8 +42,8 @@
 #define SCL_0 21
 
 #define I2C_PORT_1 i2c1
-#define SDA_1 2
-#define SCL_1 3
+#define SDA_1 6
+#define SCL_1 7
 
 //LORA - REMEMBER TO SET CALLSIGN BEFORE LAUNCH
 #define CALLSIGN "WSHAB2"
@@ -93,11 +93,13 @@ static struct STATE
 	float AscentRate;
 	float BatteryVoltage;
 	float InternalTemperature;
-	float ExternalTemperature;
-	float Pressure;
-	float Humidity;
+	float BMETemperature;
+	float BMEPressure;
+	float BMEHumidity;
 	float NO2WE;
 	float NO2AE;
+	float PMTemperature;
+	float PMHumidity;
 	float PM1;
 	float PM2;
 	float PM10;
@@ -120,6 +122,7 @@ static struct STATE
 
 void core_entry();
 void check_LED(struct STATE *s);
+void check_BUZZER(struct STATE *s);
 void fix_LED();
 void check_BME(struct STATE *s);
 void check_GPS(struct STATE *s);

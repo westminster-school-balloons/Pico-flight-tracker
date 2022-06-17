@@ -184,9 +184,9 @@ void readBME(struct STATE *state)
 			humidity = compensate_humidity(humidity);
             //printf("> (0) Temp: %.2f | Pres: %u | Humi: %.2f\n", temperature/100.0, pressure, humidity/1024.0);
             
-			state->ExternalTemperature = temperature / 100.0;
-			state->Pressure = pressure;
-			state->Humidity = humidity / 1024.0;
+			state->BMETemperature = temperature / 100.0;
+			state->BMEPressure = pressure;
+			state->BMEHumidity = humidity / 1024.0;
             
 		
 	}
