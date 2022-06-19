@@ -362,6 +362,7 @@ int LoRaIsFree(struct STATE *state)
 		*/
 	}
 
+	debug("> (1) Lora is busy\n");
 	return 0;
 }
 
@@ -550,7 +551,7 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 	// TODO: Modify to transmit new sensor data
     sprintf(TxLine,
             // SENTENCE_LENGTH-6,
-            "$$%s,%d,%02d:%02d:%02d,%.5f,%.5f,%05.5ld,%u,%.1f,%.1f,%.1f,%.0f,%.1f,%.1f,%.1f,%.2f,%7.5f,%7.5f,%3.1f,%d,%d,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f",
+            "$$%s,%d,%02d:%02d:%02d,%.5f,%.5f,%05.5ld,%u,%.1f,%.1f,%.1f,%.0f,%.1f,%.1f,%.1f,%.2f,%7.5f,%7.5f,%3.1f,%d,%d,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.2f,%.2f",
             PayloadID,
             SentenceCounter,
 			state->Hours, state->Minutes, state->Seconds,
@@ -578,7 +579,9 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 			state->Solar2,
 			state->PM1,
 			state->PM2,
-			state->PM10
+			state->PM10,
+			state->PMSamplePeriod,
+			state->PMFlowRate
             );
     Count = strlen(TxLine);
 	// DEBUG: printf("Message length: %d \n", Count);

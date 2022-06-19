@@ -21,6 +21,7 @@
 #define REG_POWERSTATUS 0x13
 #define REG_HISTOGRAMDATA 0x30
 #define REG_PMDATA 0x32
+#define REG_CONFIG 0x3C
 
 // peripheral commands to send
 #define FAN_OFF 0x02
@@ -29,6 +30,8 @@
 #define LASER_ON 0x07
 
 // byte index in histogram data
+#define BYTE_BINS 00 // 24x 16 bit values
+#define BYTE_MTOF 48 // 4x 8 bit values
 #define BYTE_SAMPLINGPERIOD 52 // 16 bit
 #define BYTE_FLOWRATE 54 // 16 bit
 #define BYTE_TEMPERATURE 56 // 16 bit
@@ -36,6 +39,13 @@
 #define BYTE_PM1 60 // 32 bit
 #define BYTE_PM2 64 // 32 bit
 #define BYTE_PM10 68 // 32 bit
+#define BYTE_REJECT_GLITCH 72 // 16 bit
+#define BYTE_REJECT_LONG_TOF 74 // 16 bit
+#define BYTE_REJECT_RATIO 76 // 16 bit
+#define BYTE_REJECT_OUT_OF_RANGE 78 // 16 bit
+#define BYTE_FAN_REV_COUNT 80 // 16 bit
+#define BYTE_LASER_STATUS 82 // 16 bit
+#define BYTE_CHECKSUM 84 // 16 bit
 
 // information for checksum calculator
 #define CRC_POLYNOMIAL 0xA001
@@ -48,9 +58,10 @@ struct PMData {
     float flow_rate;
     float temperature;
     float rhumidity;
-    float pm1_data;
-    float pm2_data;
-    float pm10_data;
+    float pm1;
+    float pm2;
+    float pm10;
+    uint16_t reject_count_glitch, reject_count_long_tof, reject_count_ratio, reject_count_out_of_range;
     uint16_t fan_rev_count;
     uint16_t laser_status;
 };

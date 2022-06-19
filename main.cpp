@@ -25,6 +25,7 @@
 //RUNTIME VARIABLES
 
 static Repeater LED_repeater(3000);
+static Repeater BZ_repeater(1000);
 static Repeater BME_repeater(500);
 static Repeater GPS_repeater(10);
 static Repeater FM_repeater(60 * 1000);
@@ -34,7 +35,7 @@ static Repeater iTemp_repeater(1000);
 static Repeater Lora_repeater(1000);
 static Repeater CUTDOWN_repeater(1000);
 static Repeater Solar_repeater(1000);
-static Repeater PM_repeater(1000);
+static Repeater PM_repeater(2000);
 
 //MAIN CORE FUNCTIONS
 
@@ -42,8 +43,7 @@ int main() {
 
     //init usb output
     stdio_init_all();
-    
-    debug("\n\n=== WM Pi Pico HAB Tracker V1.0 ===\n");
+    debug("\n\n=== WM Pi Pico HAB Tracker V2.0 ===\n");
 
     debug("\n>>> Initialising modules ...\n\n");
     
@@ -81,6 +81,15 @@ int main() {
     spi_init(SPI_PORT_0, 500000);
     spi_init(SPI_PORT_1, 500000);
 
+    // SPI Chip Select lines
+    gpio_init(CS_PM);
+    gpio_set_dir(CS_PM, GPIO_OUT);
+    gpio_put(CS_PM, 1);
+    
+    gpio_init(CS_SD);
+    gpio_set_dir(CS_SD, GPIO_OUT);
+    gpio_put(CS_SD, 1);
+
     // Set spi to correct mode for PM sensor
     spi_set_format(SPI_PORT_0, 8, SPI_CPOL_0, SPI_CPHA_1, SPI_MSB_FIRST);
 
@@ -91,12 +100,6 @@ int main() {
     gpio_set_function(MISO_1, GPIO_FUNC_SPI);
     gpio_set_function(SCLK_1, GPIO_FUNC_SPI);
     gpio_set_function(MOSI_1, GPIO_FUNC_SPI);
-
-    // SPI Chip Select lines
-    gpio_init(CS_PM);
-    gpio_set_dir(CS_PM, GPIO_OUT);
-    gpio_init(CS_SD);
-    gpio_set_dir(CS_SD, GPIO_OUT);
 
     debug("Done\n");
 
@@ -133,8 +136,10 @@ int main() {
     initSolar();
     debug("Done\n");
 
+    sleep_ms(2000);
+
     debug("> Init PM... ");
-    //initPM();
+    initPM();
     debug("Done\n");
 
     debug("> Init internal temperature... ");
@@ -176,7 +181,7 @@ int main() {
         check_GPS(&state);
         check_CUTDOWN(&state);
         check_SOLAR(&state);
-        //check_PM(&state);
+        check_PM(&state);
 
         check_internalTemps(&state);
     }
@@ -219,13 +224,15 @@ void fix_LED() {
 }
 
 void check_BUZZER(struct STATE *s) {
-    mutex_enter_blocking(&mtx);
-    TFlightMode fm = s->FlightMode;
-    mutex_exit(&mtx);
-    
-    // If landed, set pin low to turn on buzzer
-    if (fm == fmLanded) {
-        gpio_put(BZ_PIN, 0);
+    if (BZ_repeater.can_fire()) {
+        mutex_enter_blocking(&mtx);
+        TFlightMode fm = s->FlightMode;
+        mutex_exit(&mtx);
+        
+        // If landed, flip state of buzzer pin
+        if (fm == fmLanded) {
+            gpio_put(BZ_PIN, !gpio_get(BZ_PIN));
+        } 
     }
 }
 

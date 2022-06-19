@@ -103,6 +103,8 @@ static struct STATE
 	float PM1;
 	float PM2;
 	float PM10;
+	float PMSamplePeriod;
+	float PMFlowRate;
 	float Solar0;
 	float Solar1;
 	float Solar2;
