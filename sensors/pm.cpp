@@ -118,9 +118,15 @@ bool set_peripheral_status(uint8_t command) {
     }
 
     // TODO: improve this to make sure that the fan and laser turns on without fail
-    for (int i=0; i<4; i++) {
+    int pause = 600;
+    bool successful = false;
+    while (!successful) {
         write_register(REG_COMMANDBYTE, command);
-        sleep_ms(600); // wait for 600ms for the fan to turn on
+        printf("Waiting for %d ms to complete instruction\n", pause);
+        sleep_ms(pause); // wait for 600ms for the instruction to execute
+        if (pause < 20000) {
+            pause = pause*2; // double wait time every time the instruction fails to execute
+        }
         read_registers(REG_POWERSTATUS, powerstatus, 6);
 
         /* DEBUG: printf("Power status:   ");
@@ -131,9 +137,31 @@ bool set_peripheral_status(uint8_t command) {
         if (powerstatus[index] == value) {
             printf("Completed instruction\n");
             sleep_ms(10); // delay for next instruction
+            successful = true;
             return true;
         }
+        else {
+            printf("Failed instruction, trying again\n");
+        }
     }
+
+    // can delete if the code above works
+    // for (int i=0; i<4; i++) {
+    //     write_register(REG_COMMANDBYTE, command);
+    //     sleep_ms(600); // wait for 600ms for the fan to turn on
+    //     read_registers(REG_POWERSTATUS, powerstatus, 6);
+
+    //     /* DEBUG: printf("Power status:   ");
+    //     for (int j=0; j < 6; j++)
+    //         printf("%02x ", powerstatus[j]);
+    //     printf("\n"); */
+
+    //     if (powerstatus[index] == value) {
+    //         printf("Completed instruction\n");
+    //         sleep_ms(10); // delay for next instruction
+    //         return true;
+    //     }
+    // }
 
     printf("Instruction failed\n");
     return false;
