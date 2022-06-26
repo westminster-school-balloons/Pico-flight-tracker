@@ -32,7 +32,7 @@ static Repeater FM_repeater(60 * 1000);
 static Repeater NO2_repeater(1000);
 static Repeater MUON_repeater(1);
 static Repeater iTemp_repeater(1000);
-static Repeater Lora_repeater(1000);
+static Repeater Lora_repeater(2000);
 static Repeater CUTDOWN_repeater(1000);
 static Repeater Solar_repeater(1000);
 static Repeater PM_repeater(2000);
@@ -157,7 +157,7 @@ int main() {
     // readChunk(flash_target_contents, 1);
     
     debug("> Init watchdog... ");
-    watchdog_enable(500, 0);
+    watchdog_enable(2000, 0);
     debug("Done\n");
 
     debug("\n>>> Spooling thread... \n");

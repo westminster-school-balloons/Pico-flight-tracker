@@ -13,6 +13,9 @@
 
 #define ADC_CONV 3.3f / (1 << 12);
 
+// Maximum lines to go in one sd card file - needed so that writing does not take too long
+#define SD_MAX_LINES 500
+
 // Toggle if using ADC 0 and 1 for solar or N02 - CONFIGURE TO MATCH JUMPER CABLES
 #define SOLAR0_EN false
 #define SOLAR1_EN false

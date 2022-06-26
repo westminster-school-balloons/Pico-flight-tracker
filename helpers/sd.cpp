@@ -43,7 +43,6 @@ void logStringToSD(const char * text, const char * filename) {
     }
 
     FIL fil;
-    
 
     fr = f_open(&fil, filename, FA_OPEN_APPEND | FA_WRITE);
     if (FR_OK != fr && FR_EXIST != fr) {

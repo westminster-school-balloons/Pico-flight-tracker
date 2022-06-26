@@ -36,6 +36,9 @@ static uint8_t SendRepeatedPacket, RepeatedPacketType=0;
 static unsigned char Sentence[256];
 static int ImplicitOrExplicit;
 
+static int lora_sd_line_count = 0;
+static int lora_sd_file_count = 0;
+
 static inline void cs_select()
 {
     asm volatile("nop \n nop \n nop");
@@ -526,9 +529,20 @@ void check_lora(struct STATE *state)
 						printf("> (1) ");
 						printf("%s\r", (char *)Sentence);
 
-						// Write sentence to SD card
-						logStringToSD((char *)Sentence, "lora_log.txt");
-						
+						// Write sentence to SD card - filename is lora_log[xx].txt
+						lora_sd_line_count++;
+
+						if (lora_sd_line_count > SD_MAX_LINES) {
+							lora_sd_line_count = 0;
+							lora_sd_file_count++;
+						}
+
+						char lora_filename[20];
+						sprintf(lora_filename, "lora_log%d.txt", lora_sd_file_count);
+
+						debug("> (1) Logging lora data to SD...");
+						logStringToSD((char *)Sentence, lora_filename);
+						debug("Done\n");
 					}
 					SendLoRaPacket(Sentence, PacketLength, 0);  
 				}

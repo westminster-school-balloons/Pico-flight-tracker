@@ -196,7 +196,7 @@ void ProcessLine(struct STATE *state, unsigned char *b, int Count)
         {
 			if (strncmp(Buffer+7, "01,01,01,More than 100 frame errors, UART RX was disabled*70", 60) == 0) {
 				printf("<!> (0) GPS error... Wait for watchdog\n");
-				sleep_ms(1000);
+				sleep_ms(5000);
 			}
 		}
         else
