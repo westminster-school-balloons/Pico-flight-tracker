@@ -117,7 +117,6 @@ bool set_peripheral_status(uint8_t command) {
         printf("Turning laser off...\n");
     }
 
-    // TODO: improve this to make sure that the fan and laser turns on without fail
     int pause = 600;
     bool successful = false;
     while (!successful) {
