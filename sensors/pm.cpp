@@ -12,6 +12,9 @@
 #include "../helpers/sd.h"
 #include "pm.h"
 
+static int pm_sd_line_count = 0;
+static int pm_sd_file_count = 0;
+
 // select CS pin (active low)
 inline void pm_cs_select() {
     asm volatile("nop \n nop \n nop");
@@ -117,15 +120,12 @@ bool set_peripheral_status(uint8_t command) {
         printf("Turning laser off...\n");
     }
 
-    int pause = 600;
     bool successful = false;
     while (!successful) {
         write_register(REG_COMMANDBYTE, command);
-        printf("Waiting for %d ms to complete instruction\n", pause);
-        sleep_ms(pause); // wait for 600ms for the instruction to execute
-        if (pause < 20000) {
-            pause = pause*2; // double wait time every time the instruction fails to execute
-        }
+        printf("Waiting for 600ms to complete instruction\n");
+        sleep_ms(600); // wait for 600ms for the instruction to execute
+
         read_registers(REG_POWERSTATUS, powerstatus, 6);
 
         /* DEBUG: printf("Power status:   ");
@@ -140,7 +140,8 @@ bool set_peripheral_status(uint8_t command) {
             return true;
         }
         else {
-            printf("Failed instruction, trying again\n");
+            printf("Failed instruction, waiting 5000ms then trying again\n");
+            sleep_ms(5000);
         }
     }
 
@@ -243,8 +244,22 @@ void log_data_to_sd(struct PMData * data, struct STATE * state){
 
     //printf(log_string);
 
-    // Log string to sd - file is pm_log.txt
-    logStringToSD(log_string, "pm_log.txt");
+    // Increment count so that files are no longer than 1000 lines
+    pm_sd_line_count++;
+
+    if (pm_sd_line_count > SD_MAX_LINES) {
+        pm_sd_line_count = 0;
+        pm_sd_file_count++;
+    }
+
+    // Format filename - each file contains 1000 lines and file is pm_log[X].txt
+    char pm_filename[16];
+    sprintf(pm_filename, "pm_log%d.txt", pm_sd_file_count);
+
+    // Log string to sd 
+    debug("> (0) Logging PM data to SD...");
+    logStringToSD(log_string, pm_filename);
+    debug("Done\n");
 }
 
 void initPM() {
