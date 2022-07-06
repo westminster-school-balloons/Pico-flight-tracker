@@ -34,6 +34,7 @@ const float GEOFENCE[] = {
 };
 
 long cut_altitude = 0;
+int test_count = 0;
 
 void init_cutdown() {
     // Perform initialisation here
@@ -141,6 +142,12 @@ void cutdown_check(struct STATE * state){
 
     // Otherwise check if payload should be cut down
     if (should_cut(state)) {
+        test_count++;
+    } else {
+        test_count = 0;
+    }
+
+    if (test_count >= 5) {
         debug("> Payload CUTDOWN - burn started! \n");
         gpio_put(CUT_PIN, 1);
         state->HasCutDown = 1;
