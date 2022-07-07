@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 # Pull in PICO SDK (must be before project)
 include(pico_sdk_import.cmake)
+add_subdirectory(pico-ads1115/lib ads1115)
 
 project(pico)
 
@@ -35,6 +36,7 @@ target_link_libraries(pico
     hardware_adc
     hardware_flash
     pico_stdlib 
+    pico-ads1115
     pico_multicore
     pico_sync
     pico_time

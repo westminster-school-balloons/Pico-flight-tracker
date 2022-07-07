@@ -33,7 +33,7 @@ void FixUBXChecksum(unsigned char *Message, int Length)
   
   CK_A = 0;
   CK_B = 0;
-
+ 
   for (i=2; i<(Length-2); i++)
   {
     CK_A = CK_A + Message[i];
