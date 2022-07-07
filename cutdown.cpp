@@ -49,6 +49,9 @@ int test_count = 0;
 
 void init_cutdown() {
     // Perform initialisation here
+    gpio_init(CUT_PIN);
+    gpio_set_dir(CUT_PIN, GPIO_OUT);
+    gpio_put(CUT_PIN, 0);
     return;
 }
 
@@ -152,20 +155,21 @@ void cutdown_check(struct STATE * state){
     }
 
     // Otherwise check if payload should be cut down
-    if (should_cut(state)) {
-        test_count++;
-    } else {
-        test_count = 0;
+    while (test_count < 5) {
+        if (should_cut(state)) {
+            test_count++;
+        } else {
+            test_count = 0;
+            break;
+        }
     }
 
-    if (test_count >= 5) {
-        debug("> Payload CUTDOWN - burn started! \n");
-        gpio_put(CUT_PIN, 1);
-        state->HasCutDown = 1;
+    debug("> Payload CUTDOWN - burn started! \n");
+    gpio_put(CUT_PIN, 1);
+    state->HasCutDown = 1;
 
-        // Save cut altitude
-        cut_altitude = state->Altitude;
-    }
+    // Save cut altitude
+    cut_altitude = state->Altitude;
 
     return;
 
