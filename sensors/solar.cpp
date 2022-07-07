@@ -4,9 +4,15 @@
 #include "hardware/adc.h"
 #include "../main.h"
 #include "../misc.h"
+#include "../adc.h"
 #include "solar.h"
 
 void initSolar() {
+    // using ADS1115
+    if (SOLAR0_EN) {
+        ADS1115(0x48);
+    }
+
     // Init all required pins as adc gpio
     if (SOLAR0_EN) {
         adc_gpio_init(SOLAR0);
