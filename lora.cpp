@@ -544,7 +544,10 @@ void check_lora(struct STATE *state)
 						logStringToSD((char *)Sentence, lora_filename);
 						debug("Done\n");
 					}
-					SendLoRaPacket(Sentence, PacketLength, 0);  
+
+					if (LORA_TRANSMITTING) {
+						SendLoRaPacket(Sentence, PacketLength, 0);
+					}  
 				}
 			}
 		}

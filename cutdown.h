@@ -1,7 +1,7 @@
 #ifndef CUTDOWN_INCLUDED
 #define CUTDOWN_INCLUDED
 
-#define CEILING_ALT 25000
+#define CEILING_ALT 25500
 
 void init_cutdown();
 

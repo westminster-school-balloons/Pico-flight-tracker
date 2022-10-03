@@ -9,7 +9,7 @@
 // TODO: Make this actually good
 #define NUM_POINTS 33
 const float GEOFENCE[] = {
-    -1.0263835, 50.9617035
+    -1.0263835, 50.9617035,
     -0.0769043, 50.9447692,
     0.4601635, 50.9900486,
     0.9275644, 51.2404555,
@@ -155,18 +155,17 @@ void cutdown_check(struct STATE * state){
     }
 
     // Otherwise check if payload should be cut down
-    while (test_count < 5) {
-        if (should_cut(state)) {
-            test_count++;
-        } else {
-            test_count = 0;
-            break;
-        }
+    if (should_cut(state)) {
+        test_count++;
+    } else {
+        test_count = 0;
     }
 
-    debug("> Payload CUTDOWN - burn started! \n");
-    gpio_put(CUT_PIN, 1);
-    state->HasCutDown = 1;
+    if (test_count > 5) {
+        debug("> Payload CUTDOWN - burn started! \n");
+        gpio_put(CUT_PIN, 1);
+        state->HasCutDown = 1;
+    }
 
     // Save cut altitude
     cut_altitude = state->Altitude;
