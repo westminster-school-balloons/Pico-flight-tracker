@@ -1,6 +1,7 @@
 #ifndef CUTDOWN_INCLUDED
 #define CUTDOWN_INCLUDED
 
+// ***************** CHANGE THIS BEFORE LAUNCH - Should be roughly 1000-2000m below predicted burst altitutde! *****************
 #define CEILING_ALT 25500
 
 void init_cutdown();
