@@ -52,7 +52,9 @@
 #define CALLSIGN "WSHAB3"
 #define FREQUENCY 434.425
 #define LORA_MODE 1
-#define LORA_TRANSMITTING false
+#define LORA_TRANSMITTING true
+#define ENABLE_PM false
+#define ENABLE_NO2 false
 
 //GPS UART
 #define GPS_TX 4

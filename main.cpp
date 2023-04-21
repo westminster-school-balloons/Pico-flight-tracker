@@ -68,10 +68,12 @@ int main() {
     debug("> Init ADC... ");
     adc_init();
     debug("Done\n");
-
-    debug("> Init NO2 sensor... ");
-    initNO2();
-    debug("Done\n");
+    
+    if (ENABLE_NO2 = true){
+        debug("> Init NO2 sensor... ");
+        initNO2();
+        debug("Done\n");
+    }
 
     debug("> Init Muon line... ");
     initMuon();
@@ -137,10 +139,11 @@ int main() {
     debug("Done\n");
 
     sleep_ms(2000);
-
-    debug("> Init PM... ");
-    initPM();
-    debug("Done\n");
+    if (ENABLE_PM = true){
+        debug("> Init PM... ");
+        initPM();
+        debug("Done\n");
+    }
 
     debug("> Init internal temperature... ");
     adc_set_temp_sensor_enabled(true);
@@ -177,11 +180,15 @@ int main() {
         check_LED(&state);
         check_BUZZER(&state);
         check_BME(&state);
-        check_NO2(&state);
+        if (ENABLE_NO2 = true){
+            check_NO2(&state);
+        }
         check_GPS(&state);
         check_CUTDOWN(&state);
         check_SOLAR(&state);
-        check_PM(&state);
+        if (ENABLE_PM = true){
+            check_PM(&state);
+        }
 
         check_internalTemps(&state);
     }
