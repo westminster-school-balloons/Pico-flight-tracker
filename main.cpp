@@ -69,7 +69,7 @@ int main() {
     adc_init();
     debug("Done\n");
     
-    if (ENABLE_NO2 = true){
+    if (ENABLE_NO2 == true){
         debug("> Init NO2 sensor... ");
         initNO2();
         debug("Done\n");
@@ -139,7 +139,7 @@ int main() {
     debug("Done\n");
 
     sleep_ms(2000);
-    if (ENABLE_PM = true){
+    if (ENABLE_PM == true){
         debug("> Init PM... ");
         initPM();
         debug("Done\n");
@@ -180,13 +180,13 @@ int main() {
         check_LED(&state);
         check_BUZZER(&state);
         check_BME(&state);
-        if (ENABLE_NO2 = true){
+        if (ENABLE_NO2 == true){
             check_NO2(&state);
         }
         check_GPS(&state);
         check_CUTDOWN(&state);
         check_SOLAR(&state);
-        if (ENABLE_PM = true){
+        if (ENABLE_PM == true){
             check_PM(&state);
         }
 
