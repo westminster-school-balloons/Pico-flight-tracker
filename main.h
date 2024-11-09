@@ -50,10 +50,10 @@
 
 //LORA -  ************** REMEMBER TO SET CALLSIGN AND LORA_TRANSMITTING BEFORE LAUNCH ***************
 #define CALLSIGN "WSHAB3"
-#define FREQUENCY 434.425
+#define FREQUENCY 434.418
 #define LORA_MODE 1
 #define LORA_TRANSMITTING true
-#define ENABLE_PM false
+#define ENABLE_PM true
 #define ENABLE_NO2 false
 
 //GPS UART
