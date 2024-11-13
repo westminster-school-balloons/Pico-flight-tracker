@@ -116,6 +116,7 @@ static struct STATE
 	float Solar2;
 	int muonCount;
 	float muonRate;
+	float muonTemperature;
 	TFlightMode FlightMode;
 	float PredictedLongitude, PredictedLatitude;
 	float CDA;
@@ -140,6 +141,7 @@ void check_CUTDOWN(struct STATE *s);
 void check_SOLAR(struct STATE *s);
 void check_PM(struct STATE *s);
 void check_internalTemps(struct STATE *s);
+void check_MUON(struct STATE *s)
 void writeStateToMem(struct STATE * s);
 
 #endif
