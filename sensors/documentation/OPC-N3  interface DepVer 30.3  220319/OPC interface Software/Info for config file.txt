@@ -1,0 +1,3 @@
+Info for settings:
+Threshold: Enter detection threshold of device in ADC output counts (this is just for the histogram graph display)
+HistoryGraphUpdateInterval: Enter value in seconds

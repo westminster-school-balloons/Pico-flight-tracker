@@ -1,0 +1,12 @@
+OPC N3 Dev Ver 30.2	220319
+
+
+
+Commercial release
+
+Updated mannuals 072-502 V2
+ 072-503 V3
+
+
+Software Version OPC 1.0.6457.18465
+
