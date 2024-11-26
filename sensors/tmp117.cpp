@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "tmp117.h"
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "../main.h"
