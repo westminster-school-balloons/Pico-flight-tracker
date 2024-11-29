@@ -51,6 +51,7 @@ build
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
 *.code-workspace
 
 # Local History for Visual Studio Code
@@ -69,6 +70,7 @@ pico.elf.map
 pico.hex
 pico.uf2
 pico.dis
+pico_flash_region.ld
 *.elf
 *.bin
 *.map
