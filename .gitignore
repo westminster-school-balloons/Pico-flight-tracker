@@ -75,5 +75,5 @@ pico.dis
 *.s
 *.dis
 
-.pico-sdk/
-.FatFs_SPI/
+pico-sdk/
+FatFs_SPI/
