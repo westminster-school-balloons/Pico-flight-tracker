@@ -74,3 +74,6 @@ pico.dis
 *.map
 *.s
 *.dis
+
+.pico-sdk/
+.FatFs_SPI/
