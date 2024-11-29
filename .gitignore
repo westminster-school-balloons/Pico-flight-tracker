@@ -60,6 +60,7 @@ build
 # ninja
 .ninja_deps
 .ninja_log
+build.ninja
 
 # Pico SDK
 pico.bin
@@ -68,3 +69,8 @@ pico.elf.map
 pico.hex
 pico.uf2
 pico.dis
+*.elf
+*.bin
+*.map
+*.s
+*.dis

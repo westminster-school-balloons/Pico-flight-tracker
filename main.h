@@ -53,7 +53,7 @@
 #define FREQUENCY 434.418
 #define LORA_MODE 1
 #define LORA_TRANSMITTING true
-#define ENABLE_PM true
+#define ENABLE_PM false
 #define ENABLE_NO2 false
 
 //GPS UART
