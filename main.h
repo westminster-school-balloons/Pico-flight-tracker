@@ -99,9 +99,20 @@ static struct STATE
 	float AscentRate;
 	float BatteryVoltage;
 	float InternalTemperature;
+
+	//BME280 states
 	float BMETemperature;
 	float BMEPressure;
 	float BMEHumidity;
+
+	//TMP117 states
+	float TMP117Temperature;
+	
+	//AHT20 states
+	float AHT20Temperature;
+	float AHT20Humidity;
+
+	//float
 	float NO2WE;
 	float NO2AE;
 	float PMTemperature;
@@ -133,6 +144,8 @@ void check_LED(struct STATE *s);
 void check_BUZZER(struct STATE *s);
 void fix_LED();
 void check_BME(struct STATE *s);
+void check_AHT20(struct STATE *s);
+void check_TMP117(struct STATE *s);
 void check_GPS(struct STATE *s);
 void check_NO2(struct STATE *s);
 void check_LORA(struct STATE *s);
