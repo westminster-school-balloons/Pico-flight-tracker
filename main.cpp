@@ -18,6 +18,10 @@
 #include "sensors/muon.h"
 #include "sensors/solar.h"
 #include "sensors/pm.h"
+//I2C sensors
+#include "sensors/tmp117.h"
+#include "sensors/aht20.h"
+
 #include "helpers/repeater.h"
 #include "helpers/memory.h"
 #include "helpers/sd.h"
@@ -30,12 +34,14 @@ static Repeater BME_repeater(500);
 static Repeater GPS_repeater(10);
 static Repeater FM_repeater(60 * 1000);
 static Repeater NO2_repeater(1000);
-static Repeater MUON_repeater(1);
+static Repeater MUON_repeater(1000);     //Originally (1), update as Voltmeter run by Arduino
 static Repeater iTemp_repeater(1000);
 static Repeater Lora_repeater(2000);
 static Repeater CUTDOWN_repeater(1000);
 static Repeater Solar_repeater(1000);
 static Repeater PM_repeater(2000);
+static Repeater AHT20_repeater(1000);
+static Repeater TMP117_repeater(1000);
 
 //MAIN CORE FUNCTIONS
 
@@ -122,6 +128,14 @@ int main() {
     initBME280();
     debug("Done\n");
 
+    debug(">Init TMP117...");
+    initTMP117();
+    debug("Done\n");
+
+    debug(">Init AHT20...");
+    initAHT20();
+    debug("Done\n");
+
     debug("> Init GPS... ");
     initGPS();
     debug("Done\n");
@@ -180,6 +194,8 @@ int main() {
         check_LED(&state);
         check_BUZZER(&state);
         check_BME(&state);
+        check_AHT20(&state);
+        check_TMP117(&state);
         if (ENABLE_NO2 == true){
             check_NO2(&state);
         }
@@ -248,6 +264,22 @@ void check_BME(struct STATE *s) {
         mutex_enter_blocking(&mtx);
         readBME(s);
         mutex_exit(&mtx);
+    }
+}
+
+void check_TMP117(struct STATE *s){
+    if (TMP117_repeater.can_fire()){
+        mutex_enter_blocking(&mtx);
+        readTMP117(s);
+        mutex_exit(&mtx);        
+    }
+}
+
+void check_AHT20(struct STATE *s){
+    if (AHT20_repeater.can_fire()){
+        mutex_enter_blocking(&mtx);
+        readAHT20(s);
+        mutex_exit(&mtx);        
     }
 }
 

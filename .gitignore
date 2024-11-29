@@ -51,7 +51,31 @@ build
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
 *.code-workspace
 
 # Local History for Visual Studio Code
 .history/
+
+
+# ninja
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Pico SDK
+pico.bin
+pico.elf
+pico.elf.map
+pico.hex
+pico.uf2
+pico.dis
+pico_flash_region.ld
+*.elf
+*.bin
+*.map
+*.s
+*.dis
+
+pico-sdk/
+FatFs_SPI/

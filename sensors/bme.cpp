@@ -4,10 +4,11 @@
 #include "hardware/i2c.h"
 #include "../main.h"
 #include "../misc.h"
+#include "bme.h"
 
 
 
-static int DeviceAddress = 0;	// We check on both address 0x76 and 0x77
+static int DeviceAddress = 0;	// We check on both address 0x76 and 0x77     
 
 int32_t t_fine;
 
@@ -137,7 +138,8 @@ int initBME280()
 	
     if (i2c_read_blocking(I2C_PORT_0, DeviceAddress = 0x76, &rxdata, 1, false) <= 0)
 	{
-		if (i2c_read_blocking(I2C_PORT_0, DeviceAddress = 0x76, &rxdata, 1, false) <= 0)
+        printf("FAIL (1st attempt failed)");
+		if (i2c_read_blocking(I2C_PORT_0, DeviceAddress = 0x77, &rxdata, 1, false) <= 0) //changed to 0x77
 		{
 			printf("FAIL (No Device)\n");
 			DeviceAddress = 0;
