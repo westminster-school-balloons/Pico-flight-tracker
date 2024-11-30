@@ -593,7 +593,10 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 			state->PM2,
 			state->PM10,
 			state->PMSamplePeriod,
-			state->PMFlowRate
+			state->PMFlowRate,
+			state->AHT20Temperature,
+			state->AHT20Humidity,
+			state->TMP117Temperature
             );
     Count = strlen(TxLine);
 	// DEBUG: printf("Message length: %d \n", Count);
