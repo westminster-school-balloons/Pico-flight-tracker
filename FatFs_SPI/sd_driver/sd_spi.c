@@ -1,4 +1,4 @@
-/* sd_spi.c
+/* sd_card.h
 Copyright 2021 Carl John Kugler III
 
 Licensed under the Apache License, Version 2.0 (the License); you may not use 
@@ -12,112 +12,82 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 */
 
-/* Standard includes. */
+// Note: The model used here is one FatFS per SD card. 
+// Multiple partitions on a card are not supported.
+
+#ifndef _SD_CARD_H_
+#define _SD_CARD_H_
+
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 //
 #include "hardware/gpio.h"
+#include "pico/mutex.h"
 //
-#include "my_debug.h"
-#include "sd_card.h"
-#include "sd_spi.h"
+#include "ff.h"
+//
 #include "spi.h"
 
-//#define TRACE_PRINTF(fmt, args...)
-#define TRACE_PRINTF printf  // task_printf
-
-void sd_spi_go_high_frequency(sd_card_t *pSD) {
-    uint actual = spi_set_baudrate(pSD->spi->hw_inst, pSD->spi->baud_rate);
-    TRACE_PRINTF("%s: Actual frequency: %lu\n", __FUNCTION__, (long)actual);
-}
-void sd_spi_go_low_frequency(sd_card_t *pSD) {
-    uint actual = spi_set_baudrate(pSD->spi->hw_inst, 400 * 1000); // Actual frequency: 398089
-    TRACE_PRINTF("%s: Actual frequency: %lu\n", __FUNCTION__, (long)actual);
-}
-
-static void sd_spi_lock(sd_card_t *pSD) {
-    spi_lock(pSD->spi);
-}
-static void sd_spi_unlock(sd_card_t *pSD) {
-   spi_unlock(pSD->spi);
-}
-
-// Would do nothing if pSD->ss_gpio were set to GPIO_FUNC_SPI.
-static void sd_spi_select(sd_card_t *pSD) {
-    gpio_put(pSD->ss_gpio, 0);
-    // A fill byte seems to be necessary, sometimes:
-    uint8_t fill = SPI_FILL_CHAR;
-    spi_write_blocking(pSD->spi->hw_inst, &fill, 1);
-    LED_ON();
-}
-
-static void sd_spi_deselect(sd_card_t *pSD) {
-    gpio_put(pSD->ss_gpio, 1);
-    LED_OFF();
-    /*
-    MMC/SDC enables/disables the DO output in synchronising to the SCLK. This
-    means there is a posibility of bus conflict with MMC/SDC and another SPI
-    slave that shares an SPI bus. Therefore to make MMC/SDC release the MISO
-    line, the master device needs to send a byte after the CS signal is
-    deasserted.
-    */
-    uint8_t fill = SPI_FILL_CHAR;
-    spi_write_blocking(pSD->spi->hw_inst, &fill, 1);
-}
-
-/* Some SD cards want to be deselected between every bus transaction */
-void sd_spi_deselect_pulse(sd_card_t *pSD) {
-    sd_spi_deselect(pSD);
-    // tCSH Pulse duration, CS high 200 ns
-    sd_spi_select(pSD);
-}
-
-void sd_spi_acquire(sd_card_t *pSD) {
-    sd_spi_lock(pSD);
-    sd_spi_select(pSD);
-}
-
-void sd_spi_release(sd_card_t *pSD) {
-    sd_spi_deselect(pSD);
-    sd_spi_unlock(pSD);
-}
-
-bool sd_spi_transfer(sd_card_t *pSD, const uint8_t *tx, uint8_t *rx,
-                     size_t length) {
-    return spi_transfer(pSD->spi, tx, rx, length);
-}
-
-uint8_t sd_spi_write(sd_card_t *pSD, const uint8_t value) {
-    // TRACE_PRINTF("%s\n", __FUNCTION__);
-    uint8_t received = SPI_FILL_CHAR;
-#if 0
-    int num = spi_write_read_blocking(pSD->spi->hw_inst, &value, &received, 1);    
-    myASSERT(1 == num);
-#else
-    bool success = spi_transfer(pSD->spi, &value, &received, 1);
-    myASSERT(success);
+#ifdef __cplusplus
+extern "C" {
 #endif
-    return received;
-}
 
-void sd_spi_send_initializing_sequence(sd_card_t * pSD) {
-    bool old_ss = gpio_get(pSD->ss_gpio);
-    // Set DI and CS high and apply 74 or more clock pulses to SCLK:
-    gpio_put(pSD->ss_gpio, 1);
-    uint8_t ones[10];
-    memset(ones, 0xFF, sizeof ones);
-    absolute_time_t timeout_time = make_timeout_time_ms(1);
-    do {
-        sd_spi_transfer(pSD, ones, NULL, sizeof ones);
-    } while (0 < absolute_time_diff_us(get_absolute_time(), timeout_time));
-    gpio_put(pSD->ss_gpio, old_ss);
-}
+// "Class" representing SD Cards
+typedef struct {
+    const char *pcName;
+    spi_t *spi;
+    // Slave select is here in sd_card_t because multiple SDs can share an SPI
+    uint ss_gpio;                   // Slave select for this SD card
+    bool use_card_detect;
+    uint card_detect_gpio;    // Card detect; ignored if !use_card_detect
+    uint card_detected_true;  // Varies with card socket; ignored if !use_card_detect
+    // Drive strength levels for GPIO outputs.
+    // enum gpio_drive_strength { GPIO_DRIVE_STRENGTH_2MA = 0, GPIO_DRIVE_STRENGTH_4MA = 1, GPIO_DRIVE_STRENGTH_8MA = 2,
+    // GPIO_DRIVE_STRENGTH_12MA = 3 }
+    bool set_drive_strength;
+    enum gpio_drive_strength ss_gpio_drive_strength;
 
-void sd_spi_init_pl022(sd_card_t *pSD) {
-    // Let the PL022 SPI handle it.
-    // the CS line is brought high between each byte during transmission.
-    gpio_set_function(pSD->ss_gpio, GPIO_FUNC_SPI);
-}
+    // Following fields are used to keep track of the state of the card:
+    int m_Status;                                    // Card status
+    uint64_t sectors;                                // Assigned dynamically
+    int card_type;                                   // Assigned dynamically
+    mutex_t mutex;
+    FATFS fatfs;
+    bool mounted;
+} sd_card_t;
 
+#define SD_BLOCK_DEVICE_ERROR_NONE 0
+#define SD_BLOCK_DEVICE_ERROR_WOULD_BLOCK -5001 /*!< operation would block */
+#define SD_BLOCK_DEVICE_ERROR_UNSUPPORTED -5002 /*!< unsupported operation */
+#define SD_BLOCK_DEVICE_ERROR_PARAMETER -5003   /*!< invalid parameter */
+#define SD_BLOCK_DEVICE_ERROR_NO_INIT -5004     /*!< uninitialized */
+#define SD_BLOCK_DEVICE_ERROR_NO_DEVICE -5005   /*!< device is missing or not connected */
+#define SD_BLOCK_DEVICE_ERROR_WRITE_PROTECTED -5006 /*!< write protected */
+#define SD_BLOCK_DEVICE_ERROR_UNUSABLE -5007    /*!< unusable card */
+#define SD_BLOCK_DEVICE_ERROR_NO_RESPONSE -5008 /*!< No response from device */
+#define SD_BLOCK_DEVICE_ERROR_CRC -5009    /*!< CRC error */
+#define SD_BLOCK_DEVICE_ERROR_ERASE -5010 /*!< Erase error: reset/sequence */
+#define SD_BLOCK_DEVICE_ERROR_WRITE -5011 /*!< SPI Write error: !SPI_DATA_ACCEPTED */
+
+///* Disk Status Bits (DSTATUS) */
+// See diskio.h.
+//enum {
+//    STA_NOINIT = 0x01, /* Drive not initialized */
+//    STA_NODISK = 0x02, /* No medium in the drive */
+//    STA_PROTECT = 0x04 /* Write protected */
+//};
+
+bool sd_init_driver();
+int sd_init_card(sd_card_t *pSD);
+int sd_write_blocks(sd_card_t *pSD, const uint8_t *buffer,
+                    uint64_t ulSectorNumber, uint32_t blockCnt);
+int sd_read_blocks(sd_card_t *pSD, uint8_t *buffer, uint64_t ulSectorNumber,
+                   uint32_t ulSectorCount);
+bool sd_card_detect(sd_card_t *pSD);
+uint64_t sd_sectors(sd_card_t *pSD);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
 /* [] END OF FILE */
