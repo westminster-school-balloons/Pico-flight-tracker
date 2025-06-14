@@ -1,3 +1,5 @@
+## This is the most recent completely stable version. This page will be updated when future main versions are proven to be stable.
+
 # Westminster School Pi Pico Flight Computer
 A flight computer written for the Raspberry Pi Pico, based off the [pico-tracker](https://github.com/daveake/pico-tracker) project from Dave Akerman.
 
