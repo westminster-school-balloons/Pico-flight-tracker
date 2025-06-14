@@ -20,7 +20,7 @@ inline void sd_cs_select() {
 
 inline void sd_cs_deselect() {
     asm volatile("nop \n nop \n nop");
-    gpio_put(CS_PM, 1);
+    gpio_put(CS_SD, 1);
     asm volatile("nop \n nop \n nop");
 }
 

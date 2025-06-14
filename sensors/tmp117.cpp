@@ -35,6 +35,9 @@ static int32_t tmp117_read_raw() {
         int16_t temp = buffer[0] << 8 | buffer[1];
         return ( -(temp & 0b1000000000000000) | (temp & 0b0111111111111111) );
     }
+    else{
+        return 64; // Device not found, return a clearly erroneous value
+    }
 }
 
 void initTMP117()

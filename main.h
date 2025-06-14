@@ -49,8 +49,8 @@
 #define SCL_1 7
 
 //LORA -  ************** REMEMBER TO SET CALLSIGN AND LORA_TRANSMITTING BEFORE LAUNCH ***************
-#define CALLSIGN "WSHAB3"
-#define FREQUENCY 434.418
+#define CALLSIGN "WSHABT"
+#define FREQUENCY 434.425
 #define LORA_MODE 1
 #define LORA_TRANSMITTING true
 #define ENABLE_PM false

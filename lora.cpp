@@ -568,6 +568,7 @@ int BuildSentence(struct STATE *state, char *TxLine, const char *PayloadID)
 	// TODO: Modify to transmit new sensor data
     sprintf(TxLine,
             // SENTENCE_LENGTH-6,
+			// 28 Different fields 
             "$$%s,%d,%02d:%02d:%02d,%.5f,%.5f,%05.5ld,%u,%.1f,%.1f,%.1f,%.0f,%.1f,%.1f,%.1f,%d,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.2f,%.2f,%.3f,%.3f,%.3f",
             PayloadID,
             SentenceCounter,
