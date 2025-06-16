@@ -79,4 +79,4 @@ pico_flash_region.ld
 
 pico-sdk/
 FatFs_SPI/
-.generated
+generated/
